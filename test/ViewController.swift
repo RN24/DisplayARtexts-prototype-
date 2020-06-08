@@ -10,12 +10,48 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ViewController: UIViewController, ARSCNViewDelegate {
+var ARtexts = "Please input letters to text field!"
 
+
+
+
+class ViewController: UIViewController, UITextFieldDelegate, ARSCNViewDelegate {
+    
+    
+    
+ 
+
+    var scene = SCNScene()
+    
+    
     @IBOutlet var sceneView: ARSCNView!
+    
+    @IBOutlet weak var InputLetters: UITextField!
+    
+    @IBOutlet weak var showLetters: UIButton!//ボタンを操作するには宣言が必要？
+    
+    var textNode = SCNNode()
+    var oldNode = SCNNode()
+    var textGeometry = SCNText()
+    var oldGeometry = SCNText()
+    
+
+    
+    @IBAction func endKeyboard(_ sender: Any) {
+    }
+    
+    @IBOutlet weak var label: UILabel!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.sceneView = ARSCNView(frame: self.view.frame)
+        self.view.addSubview(self.sceneView)//こいつを入れると最前面に追加されるので下のtextFieldが隠れる
+        self.view.addSubview(showLetters!)//subViewに追加
+        self.view.addSubview(InputLetters)//subViewに追加
+        self.view.addSubview(label)//subViewに追加
+        
         
         // Set the view's delegate
         sceneView.delegate = self
@@ -24,11 +60,23 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.showsStatistics = true
         
         // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+     //ARtexts = "\(InputLetters.text!)"
+     //label.text = ARtexts
+     textGeometry = SCNText(string: ARtexts, extrusionDepth: 1.0)//ARtextをわたす
+     textGeometry.firstMaterial?.diffuse.contents = UIColor.orange
+     textNode = SCNNode(geometry: textGeometry)
+     textNode.position = SCNVector3(-1.0, 0.1, -2.0)
+     textNode.scale = SCNVector3(0.02, 0.02, 0.02)
+     scene.rootNode.addChildNode(textNode)
+        
+        
+        
         
         // Set the scene to the view
         sceneView.scene = scene
+    
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -72,4 +120,25 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
         
     }
+    
+        @IBAction func showLetters(_ sender: Any) {
+            
+            textNode.removeFromParentNode()
+            
+         
+            ARtexts = "\(InputLetters.text!)"
+            label.text = ARtexts
+            textGeometry = SCNText(string: ARtexts, extrusionDepth: 1.0)//ARtextをわたす
+            textGeometry.firstMaterial?.diffuse.contents = UIColor.orange
+            textNode = SCNNode(geometry: textGeometry)
+            textNode.position = SCNVector3(-1.0, 0.1, -2.0)
+            textNode.scale = SCNVector3(0.02, 0.02, 0.02)
+            
+         
+    //        scene.rootNode.replaceChildNode(oldNode, with: textNode/*, with: textNode*/)
+    //        oldNode = textNode
+            scene.rootNode.addChildNode(textNode)
+            
+        }
+        
 }
